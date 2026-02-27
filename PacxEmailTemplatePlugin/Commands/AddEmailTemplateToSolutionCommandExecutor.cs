@@ -67,9 +67,7 @@ namespace PacxEmailTemplatePlugin.Commands
                     return CommandResult.Fail($"Email template with ID {command.TemplateId} not found.");
                 }
 
-                var templateTitle = templateResults.Entities[0].Contains("title") 
-                    ? templateResults.Entities[0]["title"].ToString() 
-                    : "Unknown";
+                var templateTitle = templateResults.Entities[0].GetAttributeValue<string>("title") ?? "Unknown";
 
                 _output.WriteLine($"Found template: {templateTitle}", ConsoleColor.Yellow);
 
@@ -95,9 +93,7 @@ namespace PacxEmailTemplatePlugin.Commands
                 }
 
                 var solutionId = solutionResults.Entities[0].Id;
-                var solutionName = solutionResults.Entities[0].Contains("friendlyname") 
-                    ? solutionResults.Entities[0]["friendlyname"].ToString() 
-                    : command.SolutionUniqueName;
+                var solutionName = solutionResults.Entities[0].GetAttributeValue<string>("friendlyname") ?? command.SolutionUniqueName;
 
                 _output.WriteLine($"Found solution: {solutionName} (ID: {solutionId})", ConsoleColor.Yellow);
 

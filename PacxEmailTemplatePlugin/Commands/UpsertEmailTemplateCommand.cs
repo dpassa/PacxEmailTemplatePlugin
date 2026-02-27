@@ -68,22 +68,4 @@ namespace PacxEmailTemplatePlugin.Commands
         [Option("ispersonal", "p", "Whether the template is personal")]
         public bool? IsPersonal { get; set; }
     }
-
-    /// <summary>
-    /// Attribute to mark command options.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class OptionAttribute : Attribute
-    {
-        public string Name { get; }
-        public string? ShortName { get; }
-        public string? Description { get; }
-
-        public OptionAttribute(string name, string? shortName = null, string? description = null)
-        {
-            Name = name;
-            ShortName = shortName;
-            Description = description;
-        }
-    }
 }

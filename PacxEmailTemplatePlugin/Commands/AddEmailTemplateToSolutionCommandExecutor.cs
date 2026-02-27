@@ -12,6 +12,11 @@ namespace PacxEmailTemplatePlugin.Commands
     /// </summary>
     public class AddEmailTemplateToSolutionCommandExecutor : ICommandExecutor<AddEmailTemplateToSolutionCommand>
     {
+        /// <summary>
+        /// Component type code for Email Template in Dynamics 365.
+        /// </summary>
+        private const int EmailTemplateComponentType = 36;
+
         private readonly IOutput _output;
         private readonly IOrganizationServiceAsync2 _organizationService;
 
@@ -100,7 +105,7 @@ namespace PacxEmailTemplatePlugin.Commands
                 var request = new AddSolutionComponentRequest
                 {
                     ComponentId = command.TemplateId,
-                    ComponentType = 36, // Email Template component type
+                    ComponentType = EmailTemplateComponentType,
                     SolutionUniqueName = command.SolutionUniqueName,
                     AddRequiredComponents = command.AddRequiredComponents,
                     DoNotIncludeSubcomponents = command.DoNotIncludeSubcomponents

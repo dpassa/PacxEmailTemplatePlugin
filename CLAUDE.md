@@ -51,7 +51,8 @@ Each command consists of two files:
 ### Adding a New Command
 1. Create `MyNewCommand.cs` in `Commands/` — properties with `[Option]` and optionally `[Required]`
 2. Create `MyNewCommandExecutor.cs` in `Commands/` — implement `ICommandExecutor<MyNewCommand>`
-3. Register the executor with DI in the plugin entry point (follow existing patterns)
+
+PACX discovers executors automatically via reflection — no manual DI registration needed.
 
 ### Coding Conventions
 - **Namespaces**: `PacxEmailTemplatePlugin.Commands`
@@ -90,7 +91,7 @@ public MyExecutor(IOutput output, IOrganizationServiceAsync2 organizationService
 
 ## Current Branch
 
-`copilot/add-email-template-commands` — targeting merge into `main`.
+`dev` — targeting merge into `main`.
 
 ## Notes
 

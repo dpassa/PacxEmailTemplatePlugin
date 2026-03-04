@@ -1,13 +1,12 @@
 namespace PacxEmailTemplatePlugin.Commands
 {
     /// <summary>
-    /// Command to push (update) an existing Dynamics 365 email template from a local
-    /// template folder. Reads <c>definitions.json</c> for the title and subject, and
-    /// the optional HTML body file. Only the subject and body fields are updated on the
-    /// existing record. Fails explicitly if no template with the given title exists —
-    /// use <c>pacx emailtemplate create</c> to create a new template.
+    /// Command to create a new email template in Dynamics 365 from a local template folder.
+    /// Reads <c>definitions.json</c> and the optional HTML body file, then creates the
+    /// record. Fails explicitly if a template with the same title already exists — use
+    /// <c>pacx emailtemplate push</c> to update an existing template.
     /// </summary>
-    public class PushEmailTemplateCommand
+    public class CreateEmailTemplateCommand
     {
         /// <summary>
         /// Gets or sets the path to the template folder containing <c>definitions.json</c>
@@ -18,9 +17,9 @@ namespace PacxEmailTemplatePlugin.Commands
 
         /// <summary>
         /// Gets or sets the unique name of a Dataverse solution the template should be
-        /// added to immediately after the push completes.
+        /// added to immediately after creation.
         /// </summary>
-        [Option("solution", "s", "Solution unique name — adds template to the solution after push")]
+        [Option("solution", "s", "Solution unique name — adds template to the solution after creation")]
         public string? SolutionUniqueName { get; set; }
     }
 }

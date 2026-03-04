@@ -2,10 +2,12 @@
 
 ## Project Overview
 
-A .NET 8.0 plugin for [PACX (Greg.Xrm.Command)](https://github.com/neronotte/Greg.Xrm.Command), a CLI tool for Microsoft Dataverse/Dynamics 365. This plugin adds two commands for managing email templates:
+A .NET 8.0 plugin for [PACX (Greg.Xrm.Command)](https://github.com/neronotte/Greg.Xrm.Command), a CLI tool for Microsoft Dataverse/Dynamics 365. This plugin adds commands for managing email templates from a local folder structure:
 
-- `pacx emailtemplate upsert` — Create or update an email template by title
-- `pacx emailtemplate addtosolution` — Add an email template as a solution component
+- `pacx emailtemplate init` — Scaffold a local template folder (optionally pulling from D365 with `--remote`)
+- `pacx emailtemplate create` — Create a new D365 template from a local folder; fails if already exists
+- `pacx emailtemplate push` — Update subject/body of an existing D365 template from a local folder; fails if not found
+- `pacx emailtemplate addtosolution` — Add an existing template to a D365 solution by ID
 
 ## Repository Structure
 
@@ -17,11 +19,15 @@ PacxEmailTemplatePlugin/
 └── PacxEmailTemplatePlugin/            # Main project
     ├── PacxEmailTemplatePlugin.csproj
     └── Commands/
-        ├── OptionAttribute.cs                          # Shared CLI option attribute
-        ├── UpsertEmailTemplateCommand.cs               # Command params (upsert)
-        ├── UpsertEmailTemplateCommandExecutor.cs       # Business logic (upsert)
-        ├── AddEmailTemplateToSolutionCommand.cs        # Command params (add to solution)
-        └── AddEmailTemplateToSolutionCommandExecutor.cs# Business logic (add to solution)
+        ├── OptionAttribute.cs                              # Shared CLI option attribute
+        ├── InitEmailTemplateCommand.cs                     # Command params (init)
+        ├── InitEmailTemplateCommandExecutor.cs             # Business logic (init / --remote pull)
+        ├── CreateEmailTemplateCommand.cs                   # Command params (create)
+        ├── CreateEmailTemplateCommandExecutor.cs           # Business logic (create-only + additionalFields)
+        ├── PushEmailTemplateCommand.cs                     # Command params (push)
+        ├── PushEmailTemplateCommandExecutor.cs             # Business logic (update subject+body only)
+        ├── AddEmailTemplateToSolutionCommand.cs            # Command params (addtosolution)
+        └── AddEmailTemplateToSolutionCommandExecutor.cs    # Business logic (addtosolution)
 ```
 
 ## Build
@@ -47,6 +53,38 @@ No test project exists. Testing is done manually via the PACX CLI.
 Each command consists of two files:
 - **Command class** — Plain C# class with properties decorated with `[Required]` and `[Option]` attributes. Defines what parameters the CLI accepts.
 - **Executor class** — Implements `ICommandExecutor<TCommand>`. Contains all business logic and Dataverse calls.
+
+### Local Template Folder Convention
+`init`, `create`, and `push` all operate on a two-level folder structure:
+```
+templates/
+├── definitions.json          # ROOT — shared defaults for all templates in this directory
+└── MyTemplateName/
+    ├── MyTemplateName.html   # optional — email body (HTML); filename must match folder name
+    └── definitions.json      # TEMPLATE — specific metadata for this template
+```
+
+**Root `definitions.json`** (created once by `init`, shared across all sibling templates):
+| Field | Default | Notes |
+|---|---|---|
+| `templateTypeCode` | `"email"` | Applied to all templates unless overridden |
+| `languageCode` | `1033` | LCID, e.g. 1033 = English |
+| `isPersonal` | `false` | `true` = scoped to owning user |
+
+**Template `definitions.json`** (one per template folder):
+| Field | Required | Used by | Notes |
+|---|---|---|---|
+| `title` | Yes | create, push | D365 record title — unique key |
+| `subject` | Yes | create, push | Email subject line |
+| `description` | No | create | — |
+| `templateTypeCode` | No | create | Overrides root value |
+| `languageCode` | No | create | Overrides root value |
+| `isPersonal` | No | create | Overrides root value |
+| `additionalFields` | No | create only | `{ "new_field": value }` — types inferred from JSON |
+
+Resolution order: template-level → root-level → hard-coded default.
+
+`presentationxml` and `subjectpresentationxml` are always derived automatically via `WrapInPresentationXml` — never set manually.
 
 ### Adding a New Command
 1. Create `MyNewCommand.cs` in `Commands/` — properties with `[Option]` and optionally `[Required]`

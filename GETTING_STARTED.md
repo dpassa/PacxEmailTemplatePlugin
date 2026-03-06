@@ -53,32 +53,47 @@ Before using the plugin, ensure you have:
 
 ## Quick Start
 
-### 1. Create an Email Template
+### New project — scaffold from scratch
 
-Create a simple email template:
-
-```bash
-pacx emailtemplate upsert \
-  --title "Welcome Email" \
-  --subject "Welcome to our service!" \
-  --body "<html><body><h1>Welcome!</h1><p>Thank you for joining us.</p></body></html>" \
-  --description "Welcome email sent to new customers"
-```
-
-### 2. Update an Existing Template
-
-To update, use the same command with the same title:
+Create a stub folder for a template you will build locally:
 
 ```bash
-pacx emailtemplate upsert \
-  --title "Welcome Email" \
-  --subject "Welcome to our improved service!" \
-  --body "<html><body><h1>Welcome!</h1><p>We've made exciting improvements.</p></body></html>"
+mkdir templates && cd templates
+pacx emailtemplate init --name "Welcome Email"
+# edit templates/Welcome Email/Welcome Email.html and definitions.json
+pacx emailtemplate create --path "Welcome Email" --solution MyCustomSolution
 ```
 
-### 3. Add Template to a Solution
+### Existing project — bulk pull from DEV
 
-First, get the template ID from the upsert command output, then:
+If your D365 environment already has custom email templates, import them all into
+version control in one step:
+
+> **Important:** Always run this against your **DEV** environment.
+> Pulling from DEV captures the baseline state of all unmanaged (custom) templates
+> so the whole team can start using this tooling on already-started projects.
+
+```bash
+mkdir templates && cd templates
+
+# Pull every template from D365 into the current directory
+pacx emailtemplate init --remote
+
+# Or pull only a specific template
+pacx emailtemplate init --name "Welcome Email" --remote
+```
+
+Each template lands in its own sub-folder (`templates/<TemplateName>/`) with a
+`definitions.json` and an HTML body file. Commit the result to your repository so
+teammates can use `push` to deploy changes from that point on.
+
+### Push an update
+
+```bash
+pacx emailtemplate push --path "templates/Welcome Email"
+```
+
+### Add a template to a solution
 
 ```bash
 pacx emailtemplate addtosolution \

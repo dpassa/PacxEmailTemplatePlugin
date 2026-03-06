@@ -73,19 +73,35 @@ Resolution order: template-level → root-level → hard-coded default.
 
 ### 1. `pacx emailtemplate init`
 
-Scaffolds a local template folder. Without `--remote` it creates a stub folder with an empty HTML file and a `definitions.json`. With `--remote` it fetches the existing D365 template and populates the local files from the record.
+Scaffolds the local folder structure for email templates.
+
+- **Without `--remote`** — creates a single stub folder with an empty HTML file and a `definitions.json`. `--name` is required.
+- **With `--remote`** — performs a **bulk pull** from Dynamics 365: every template found in D365 is scaffolded as a local folder. Folders that already exist are skipped automatically. `--name` is optional in this mode and acts as a filter (pull only the template whose title matches).
+
+> **Important:** Always run `--remote` against your **DEV** environment.
+> Pulling from DEV ensures version control captures the baseline state of all unmanaged
+> (custom) templates and enables the whole team to adopt this tooling on projects that
+> already have templates in D365.
 
 ```bash
+# Local stub (no D365 connection needed)
 pacx emailtemplate init --name "Welcome Email"
+pacx emailtemplate init --name "Welcome Email" --path ./templates
+
+# Bulk pull — scaffolds ALL templates from D365 into the current directory
+pacx emailtemplate init --remote
+pacx emailtemplate init --remote --path ./templates
+
+# Single pull — scaffolds only the template whose title matches
 pacx emailtemplate init --name "Welcome Email" --remote
 pacx emailtemplate init --name "Welcome Email" --path ./templates --remote
 ```
 
 | Parameter | Alias | Required | Description |
 |---|---|---|---|
-| `--name` | `-n` | Yes | Template name — used as folder name and D365 title |
-| `--path` | `-p` | No | Base directory for the new template folder (default: current directory) |
-| `--remote` | `-r` | No | Fetch from D365 and populate local files from the existing record |
+| `--name` | `-n` | Only without `--remote` | Template name — folder name; optional D365 title filter when `--remote` is used |
+| `--path` | `-p` | No | Base directory for the new template folder(s) (default: current directory) |
+| `--remote` | `-r` | No | Bulk pull from D365 — scaffolds all unmanaged templates (optionally filtered by `--name`) |
 
 ### 2. `pacx emailtemplate create`
 

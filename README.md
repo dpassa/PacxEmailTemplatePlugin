@@ -176,11 +176,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Related Projects
 
 - [PACX (Greg.Xrm.Command)](https://github.com/neronotte/Greg.Xrm.Command) - The core command-line utility
-- [XrmToolBox](https://www.xrmtoolbox.com/) - A Windows application for Dynamics 365 customization
 
 ## Author
 
-David Passa ([@dpassa](https://github.com/dpassa))
+Davide Passariello ([@dpassa](https://github.com/dpassa))
 
 ## Acknowledgments
 
